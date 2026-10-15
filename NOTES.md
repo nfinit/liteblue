@@ -157,6 +157,36 @@ clearest weakness (see below).
   is the fix if interactive stop is wanted.
 - **No tablebases** and no dedicated endgame knowledge beyond king activity.
 
+## Robustness fixes (October 2026)
+
+Claude Opus 5.5 reviewed the engine while building the web front end and found
+four latent bugs. All are fixed and covered by `make check`:
+
+- **The repetition history could be read past its end.** `rep_push` stopped
+  storing at `REP_MAX` but kept counting, so a game history longer than the
+  buffer made `is_repetition` index past the array. The buffer is now sized
+  `REP_MAX + MAX_PLY + 4`, and `search_set_history` keeps the *most recent*
+  positions rather than the oldest. (Reproduced: the old code read
+  `g_rep[1024]` on a 1024-element array; the fix survives the same input.)
+- **A zeroed search limit meant one millisecond.** A caller that cleared the
+  limit with `memset` and set only `nodes` left `wtime = 0`, which the time
+  logic read as "no time left" and turned into a 1 ms limit - so the engine
+  returned a weak move almost immediately. `compute_time` now treats a
+  non-positive clock as "not set", and `search_limit_default()` is provided so
+  the struct never needs hand-zeroing.
+- **The search could return no move at all.** If no depth finished within the
+  limit, `search_go` returned 0. It now always returns a legal move when one
+  exists.
+- **`tt_init` leaked the previous table** on every `setoption name Hash` in a
+  UCI session. It now frees it first.
+
+`MAX_MOVES` (256) is now commented in `movegen.h`: a legal position has at most
+218 moves, so the list cannot overflow. None of this changes the public
+functions the web front end calls (`board_init`, `pos_start`, `gen_legal`,
+`make_move`, `sq_attacked`, `search_init`, `search_set_history`, `search_go`),
+so it can be re-pinned safely - though real strength changes will, of course,
+change some replies.
+
 ## Next steps
 
 1. **Web front end** - done: a 3D board at

@@ -21,5 +21,13 @@ tui: tui.c $(CORE) $(HDRS)
 arena: arena.c $(CORE) $(HDRS)
 	$(CC) $(CFLAGS) -o $@ arena.c $(CORE)
 
+rep_check: rep_check.c $(CORE) $(HDRS)
+	$(CC) $(CFLAGS) -o $@ rep_check.c $(CORE)
+
+# Repetition regression check, then the full perft suite.
+check: rep_check perft
+	./rep_check
+	./perft -k suite 4
+
 clean:
-	rm -f perft liteblue tui arena
+	rm -f perft liteblue tui arena rep_check

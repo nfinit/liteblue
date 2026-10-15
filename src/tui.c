@@ -56,11 +56,8 @@ static void engine_move(void)
     Move m;
     char buf[8];
 
-    lim.depth = 0;
+    search_limit_default(&lim);
     lim.movetime_ms = engine_ms;
-    lim.wtime_ms = lim.btime_ms = lim.winc_ms = lim.binc_ms = -1;
-    lim.infinite = 0;
-    lim.nodes = 0;
     lim.silent = 1;
 
     search_set_history(hist, histn);

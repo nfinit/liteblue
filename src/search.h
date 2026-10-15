@@ -30,6 +30,9 @@ void search_init(void);
 void search_set_hash(long entries);
 void search_clear(void);
 
+/* Initialise a limit to "nothing set": no depth, no clock, no limit. */
+void search_limit_default(SearchLimit *l);
+
 /*
  * Supply the Zobrist keys of all positions played so far (oldest first,
  * including the current position) so the search can detect repetitions.

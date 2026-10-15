@@ -69,11 +69,8 @@ int main(int argc, char **argv)
             return 0;
         }
 
-        lim.depth = 0;
+        search_limit_default(&lim);
         lim.movetime_ms = ms;
-        lim.wtime_ms = lim.btime_ms = lim.winc_ms = lim.binc_ms = -1;
-        lim.infinite = 0;
-        lim.nodes = 0;
         lim.silent = 1;
 
         search_set_history(game, gn);

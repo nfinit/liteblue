@@ -6,6 +6,10 @@
 
 #include "board.h"
 
+/*
+ * A legal chess position has at most 218 moves, so 256 slots never overflow;
+ * move generation silently stops past this, which cannot happen in practice.
+ */
 #define MAX_MOVES 256
 
 typedef struct {

@@ -100,15 +100,7 @@ static void cmd_go(char *rest)
     Move best;
     char buf[8];
 
-    lim.depth = 0;
-    lim.movetime_ms = 0;
-    lim.wtime_ms = -1;
-    lim.btime_ms = -1;
-    lim.winc_ms = -1;
-    lim.binc_ms = -1;
-    lim.infinite = 0;
-    lim.nodes = 0;
-    lim.silent = 0;
+    search_limit_default(&lim);
 
     tok = strtok(rest, " \t\n");
     while (tok != NULL) {
@@ -174,11 +166,8 @@ static void cmd_bench(char *rest)
     if (depth <= 0)
         depth = 6;
 
+    search_limit_default(&lim);
     lim.depth = depth;
-    lim.movetime_ms = 0;
-    lim.wtime_ms = lim.btime_ms = lim.winc_ms = lim.binc_ms = -1;
-    lim.infinite = 0;
-    lim.nodes = 0;
     lim.silent = 1;
 
     pos_start(&q);

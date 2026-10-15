@@ -37,7 +37,12 @@ static int g_history[128][128];
 static Move g_pv[MAX_PLY][MAX_PLY];
 static int g_pvlen[MAX_PLY];
 
-static U64 g_rep[REP_MAX];
+/*
+ * Repetition history: the most recent REP_MAX game positions, plus headroom
+ * for the search path pushed above them (at most MAX_PLY), so a lookup can
+ * never run off the end of the array.
+ */
+static U64 g_rep[REP_MAX + MAX_PLY + 4];
 static int g_repn;
 
 void search_init(void)
@@ -55,12 +60,29 @@ void search_clear(void)
     tt_clear();
 }
 
+void search_limit_default(SearchLimit *l)
+{
+    l->depth = 0;
+    l->movetime_ms = 0;
+    l->wtime_ms = -1;
+    l->btime_ms = -1;
+    l->winc_ms = -1;
+    l->binc_ms = -1;
+    l->infinite = 0;
+    l->nodes = 0;
+    l->silent = 0;
+}
+
 void search_set_history(const U64 *keys, int n)
 {
-    int i;
+    int i, start = 0;
+    if (n > REP_MAX) {          /* keep the most recent positions */
+        start = n - REP_MAX;
+        n = REP_MAX;
+    }
     g_repn = 0;
-    for (i = 0; i < n && i < REP_MAX; i++)
-        g_rep[g_repn++] = keys[i];
+    for (i = 0; i < n; i++)
+        g_rep[g_repn++] = keys[start + i];
 }
 
 static int elapsed_ms(clock_t t0)
@@ -70,9 +92,8 @@ static int elapsed_ms(clock_t t0)
 
 static void rep_push(U64 key)
 {
-    if (g_repn < REP_MAX)
-        g_rep[g_repn] = key;
-    g_repn++;
+    if (g_repn < (int) (sizeof g_rep / sizeof g_rep[0]))
+        g_rep[g_repn++] = key;
 }
 
 static void rep_pop(void)
@@ -434,7 +455,7 @@ static void compute_time(const SearchLimit *lim, const Position *p)
 
     t = (p->side == WHITE) ? lim->wtime_ms : lim->btime_ms;
     inc = (p->side == WHITE) ? lim->winc_ms : lim->binc_ms;
-    if (t < 0)
+    if (t <= 0)                 /* <= 0 means "no clock" (e.g. a zeroed limit) */
         return;
     if (inc < 0)
         inc = 0;
@@ -464,6 +485,14 @@ Move search_go(Position *p, const SearchLimit *lim, SearchResult *res)
     g_node_limit = lim->nodes;
     memset(g_killers, 0, sizeof(g_killers));
     memset(g_history, 0, sizeof(g_history));
+
+    /* Always have a legal move to return, even if cut off before depth 1. */
+    {
+        MoveList ml;
+        gen_legal(p, &ml);
+        if (ml.n > 0)
+            best = ml.m[0];
+    }
 
     t0 = clock();
     g_start = t0;

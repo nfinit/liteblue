@@ -62,3 +62,4 @@ src/perft
 src/liteblue
 src/tui
 src/arena
+src/rep_check

@@ -45,12 +45,16 @@ void tt_init(long entries)
 {
     long e = 1;
 
+    if (table != NULL) {        /* free any previous table (setoption Hash) */
+        free(table);
+        table = NULL;
+    }
+
     if (entries < 1024)
         entries = 1024;
     while (e * 2 <= entries)
         e *= 2;
 
-    table = NULL;
     while (e >= 1024) {
         table = (TTEntry *) calloc((size_t) e, sizeof(TTEntry));
         if (table != NULL)
