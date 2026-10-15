@@ -4,7 +4,7 @@ Versioning is `MAJOR.MINOR.PATCH`. `MAJOR` for incompatible changes (protocol,
 move/board format, interface); `MINOR` for new features or measurable changes in
 strength or behaviour; `PATCH` for bug fixes and other non-behavioural changes.
 
-## 1.1.0 - unreleased
+## 1.1.0 - 2026-10-15
 
 - Add a pawn-shield **king-safety** term to the evaluation, scaled by the
   material phase. In self-play the engine now castles instead of walking its
