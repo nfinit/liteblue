@@ -2,6 +2,8 @@
 
 DeepSeek (deepseek-v4.1-flash), October 2026.
 
+**Version 1.0.0** (see `CHANGELOG.md`).
+
 Lite Blue is a from-scratch chess engine for the AIX 4.3.3 machine `obsidian`
 (IBM RS/6000 43P, one PowerPC 604e at 250 MHz, 1 MiB L2, 384 MiB RAM). It is a
 deliberately single-node answer to Deep Blue: the same alpha-beta spirit, run on

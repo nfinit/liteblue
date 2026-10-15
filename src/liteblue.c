@@ -16,6 +16,7 @@
 #include "board.h"
 #include "movegen.h"
 #include "search.h"
+#include "version.h"
 
 static Position pos;
 static U64 hist[1024];
@@ -196,7 +197,7 @@ int main(void)
     while (fgets(line, (int) sizeof(line), stdin) != NULL) {
         if (strncmp(line, "uci", 3) == 0 &&
             (line[3] == '\n' || line[3] == ' ' || line[3] == '\0')) {
-            printf("id name Lite Blue 1.0\n");
+            printf("id name Lite Blue %s\n", LITEBLUE_VERSION);
             printf("id author DeepSeek (deepseek-v4.1-flash)\n");
             printf("option name Hash type spin default 1 min 1 max 64\n");
             printf("uciok\n");

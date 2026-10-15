@@ -5,7 +5,7 @@ CC      = cc
 CFLAGS  = -O2
 
 CORE    = board.c movegen.c eval.c tt.c search.c
-HDRS    = types.h board.h movegen.h eval.h tt.h search.h
+HDRS    = types.h board.h movegen.h eval.h tt.h search.h version.h
 
 all: perft liteblue tui arena
 
