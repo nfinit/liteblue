@@ -41,6 +41,19 @@ Interactive: `./tui` (type a move like `e2e4`, or `d`, `undo`, `new`, `go`,
 
 Self-play: `./arena 500 40` (500 ms per move, up to 40 plies).
 
+## Tools
+
+`tools/match` plays two engine binaries against each other over UCI and reports
+the score and an Elo delta; it is how engine changes are measured here.
+
+```
+cd tools && make
+./match ../src/liteblue ../src/liteblue 6 6 200
+```
+
+Usage: `match ENGINE_A ENGINE_B [depthA] [depthB] [max_plies]`. Each opening is
+played twice, colours swapped.
+
 ## Correctness
 
 - Move generation is perft-verified against the standard test positions, with the

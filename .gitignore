@@ -66,3 +66,6 @@ src/liteblue
 src/tui
 src/arena
 src/rep_check
+
+# Companion tool build outputs
+tools/match
