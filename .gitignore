@@ -56,3 +56,9 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Lite Blue build outputs (the binaries the Makefile leaves behind)
+src/perft
+src/liteblue
+src/tui
+src/arena

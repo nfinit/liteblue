@@ -1,0 +1,7 @@
+# Lite Blue - search throughput on obsidian (PowerPC 604e, AIX 4.3.3)
+# XL C 5.0.2 -O2 -qlanglvl=ansi vs GCC 2.95.3 -O2 -ansi
+
+bench depth 7 nodes 22602 time 480 ms nps 47087
+bench depth 7 nodes 22602 time 540 ms nps 41855
+bench depth 9 nodes 87196 time 1840 ms nps 47389
+bench depth 9 nodes 87196 time 2080 ms nps 41921

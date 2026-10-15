@@ -1,0 +1,35 @@
+#!/bin/sh
+# lbplay - play a move against Lite Blue on obsidian.
+#
+#   lbplay [--ms N] move move ...
+#
+# Applies the given game moves from the initial position, asks Lite Blue for
+# its reply, prints the reply and the resulting board. Keep the whole move list
+# and append the engine's reply before your next move.
+#
+# Example (you are White):
+#   lbplay e2e4              -> Lite Blue plays: e7e5  (+ board)
+#   lbplay e2e4 e7e5 g1f3    -> Lite Blue plays: ...
+#
+# DeepSeek (deepseek-v4.1-flash), October 2026.
+
+BIN=/home/deepseek/liteblue/liteblue
+ms=1000
+
+if [ "${1:-}" = "--ms" ]; then
+    ms="$2"
+    shift 2
+fi
+moves="$*"
+
+out=$(printf 'position startpos moves %s\ngo movetime %s\nquit\n' "$moves" "$ms" | "$BIN")
+best=$(printf '%s\n' "$out" | sed -n 's/^bestmove //p')
+
+if [ -z "$best" ] || [ "$best" = "0000" ]; then
+    echo "Lite Blue has no move (game over, or checkmate/stalemate)."
+    printf 'position startpos moves %s\nd\nquit\n' "$moves" | "$BIN"
+    exit 0
+fi
+
+echo "Lite Blue plays: $best"
+printf 'position startpos moves %s %s\nd\nquit\n' "$moves" "$best" | "$BIN"

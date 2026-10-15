@@ -1,0 +1,9 @@
+# Lite Blue - perft verification on obsidian (PowerPC 604e, AIX 4.3.3)
+# XL C 5.0.2, -O2 -qlanglvl=ansi, incremental Zobrist key verified (-k)
+
+startpos  d4        197281  expected       197281  OK  (0.75s)
+kiwipete  d4       4085603  expected      4085603  OK  (14.75s)
+pos3      d4         43238  expected        43238  OK  (0.21s)
+pos4      d4        422333  expected       422333  OK  (1.49s)
+pos5      d4       2103487  expected      2103487  OK  (7.52s)
+pos6      d4       3894594  expected      3894594  OK  (12.79s)
