@@ -9,6 +9,6 @@
 #ifndef LITEBLUE_VERSION_H
 #define LITEBLUE_VERSION_H
 
-#define LITEBLUE_VERSION "1.0.0"
+#define LITEBLUE_VERSION "1.1.0"
 
 #endif /* LITEBLUE_VERSION_H */

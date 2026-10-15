@@ -115,6 +115,37 @@ static const int *pst_ptr(int type)
     }
 }
 
+/*
+ * Pawn shield in front of the king: rewards friendly pawns on the king's file
+ * and the two files beside it, and penalises open files next to the king. It is
+ * scaled by the material phase in eval(), so it matters in the middlegame but
+ * not in the endgame (where the king belongs in the open).
+ */
+static int king_shield(const Position *p, int color)
+{
+    int k = p->king_sq[color];
+    int r = k >> 4;
+    int f = k & 7;
+    int dir = (color == WHITE) ? 1 : -1;
+    int own = (color == WHITE) ? WP : BP;
+    int df, sc = 0;
+
+    for (df = -1; df <= 1; df++) {
+        int ff = f + df;
+        if (ff < 0 || ff > 7)
+            continue;
+        if (r + dir >= 0 && r + dir <= 7 &&
+            p->board[(r + dir) * 16 + ff] == own)
+            sc += 12;
+        else if (r + 2 * dir >= 0 && r + 2 * dir <= 7 &&
+                 p->board[(r + 2 * dir) * 16 + ff] == own)
+            sc += 6;
+        else
+            sc -= 12;
+    }
+    return sc;
+}
+
 int eval(const Position *p)
 {
     int sq;
@@ -164,6 +195,9 @@ int eval(const Position *p)
         score += 30;
     if (bb >= 2)
         score -= 30;
+
+    /* king safety: a pawn shield, scaled to the middlegame */
+    score += (king_shield(p, WHITE) - king_shield(p, BLACK)) * phase / 24;
 
     score += (p->side == WHITE) ? 10 : -10;     /* tempo */
 
