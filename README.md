@@ -51,8 +51,10 @@ cd tools && make
 ./match ../src/liteblue ../src/liteblue 6 6 200
 ```
 
-Usage: `match ENGINE_A ENGINE_B [depthA] [depthB] [max_plies]`. Each opening is
-played twice, colours swapped.
+Usage: `match ENGINE_A ENGINE_B [depthA] [depthB] [max_plies] [book]`. Each
+engine is a persistent UCI process (moves cost only the search); each opening is
+played twice, colours swapped. `book` is an optional file of opening positions
+(one FEN per line, e.g. a UHO subset); without it a small built-in list is used.
 
 ## Correctness
 
