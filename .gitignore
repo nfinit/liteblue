@@ -1,6 +1,9 @@
 # Agent workspace
 workspace/
 
+# Local wiki copy
+wiki/
+
 # Prerequisites
 *.d
 
