@@ -87,7 +87,8 @@ void search_set_history(const U64 *keys, int n)
 
 static int elapsed_ms(clock_t t0)
 {
-    return (int)((clock() - t0) * 1000L / (long) CLOCKS_PER_SEC);
+    /* double, to avoid 32-bit overflow on long searches (AIX clock_t) */
+    return (int) ((double) (clock() - t0) * 1000.0 / (double) CLOCKS_PER_SEC);
 }
 
 static void rep_push(U64 key)

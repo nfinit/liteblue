@@ -4,6 +4,13 @@ Versioning is `MAJOR.MINOR.PATCH`. `MAJOR` for incompatible changes (protocol,
 move/board format, interface); `MINOR` for new features or measurable changes in
 strength or behaviour; `PATCH` for bug fixes and other non-behavioural changes.
 
+## 1.2.1 - 2026-10-16
+
+- Fix a 32-bit overflow in `elapsed_ms()`: searches longer than about two
+  seconds on AIX reported a negative time and a bogus nodes-per-second value,
+  and the same value feeds time management, so a long time-controlled search
+  could overrun. Found on obsidian while checking the site's node-rate figure.
+
 ## 1.2.0 - 2026-10-15
 
 - Add a **pawn-structure** evaluation: bonuses for passed pawns by how close
