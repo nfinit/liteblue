@@ -146,6 +146,75 @@ static int king_shield(const Position *p, int color)
     return sc;
 }
 
+/*
+ * Pawn structure: penalise doubled and isolated pawns, reward passed pawns by
+ * how close they are to promoting. Returns a White-relative score.
+ */
+static int pawn_structure(const Position *p)
+{
+    static const int passed[8] = { 0, 5, 10, 20, 35, 60, 100, 0 };
+    int score = 0;
+    int f, r, rr, ff, sq;
+    int wcnt[8], bcnt[8];
+
+    for (f = 0; f < 8; f++) { wcnt[f] = 0; bcnt[f] = 0; }
+    for (sq = 0; sq < 128; sq++) {
+        if (!on_board(sq))
+            continue;
+        if (p->board[sq] == WP)
+            wcnt[sq & 7]++;
+        else if (p->board[sq] == BP)
+            bcnt[sq & 7]++;
+    }
+
+    for (f = 0; f < 8; f++) {
+        int wl = (f > 0) ? wcnt[f - 1] : 0;
+        int wr = (f < 7) ? wcnt[f + 1] : 0;
+        int bl = (f > 0) ? bcnt[f - 1] : 0;
+        int br = (f < 7) ? bcnt[f + 1] : 0;
+
+        if (wcnt[f] > 1)
+            score -= 12 * (wcnt[f] - 1);              /* doubled */
+        if (bcnt[f] > 1)
+            score += 12 * (bcnt[f] - 1);
+        if (wcnt[f] > 0 && wl == 0 && wr == 0)
+            score -= 15 * wcnt[f];                    /* isolated */
+        if (bcnt[f] > 0 && bl == 0 && br == 0)
+            score += 15 * bcnt[f];
+    }
+
+    for (sq = 0; sq < 128; sq++) {
+        int pc, blocked;
+        if (!on_board(sq))
+            continue;
+        pc = p->board[sq];
+        r = sq >> 4;
+        f = sq & 7;
+        if (pc == WP) {
+            blocked = 0;
+            for (ff = f - 1; ff <= f + 1 && !blocked; ff++) {
+                if (ff < 0 || ff > 7)
+                    continue;
+                for (rr = r + 1; rr < 8; rr++)
+                    if (p->board[rr * 16 + ff] == BP) { blocked = 1; break; }
+            }
+            if (!blocked)
+                score += passed[r];
+        } else if (pc == BP) {
+            blocked = 0;
+            for (ff = f - 1; ff <= f + 1 && !blocked; ff++) {
+                if (ff < 0 || ff > 7)
+                    continue;
+                for (rr = r - 1; rr >= 0; rr--)
+                    if (p->board[rr * 16 + ff] == WP) { blocked = 1; break; }
+            }
+            if (!blocked)
+                score -= passed[7 - r];
+        }
+    }
+    return score;
+}
+
 int eval(const Position *p)
 {
     int sq;
@@ -198,6 +267,8 @@ int eval(const Position *p)
 
     /* king safety: a pawn shield, scaled to the middlegame */
     score += (king_shield(p, WHITE) - king_shield(p, BLACK)) * phase / 24;
+
+    score += pawn_structure(p);
 
     score += (p->side == WHITE) ? 10 : -10;     /* tempo */
 

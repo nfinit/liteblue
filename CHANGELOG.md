@@ -4,6 +4,13 @@ Versioning is `MAJOR.MINOR.PATCH`. `MAJOR` for incompatible changes (protocol,
 move/board format, interface); `MINOR` for new features or measurable changes in
 strength or behaviour; `PATCH` for bug fixes and other non-behavioural changes.
 
+## 1.2.0 - 2026-10-15
+
+- Add a **pawn-structure** evaluation: bonuses for passed pawns by how close
+  they are to promoting, and penalties for doubled and isolated pawns. Measured
+  over 512 openings (1024 games) with the match harness at depth 6: **+33 Elo**
+  versus 1.1.0.
+
 ## 1.1.0 - 2026-10-15
 
 - Add a pawn-shield **king-safety** term to the evaluation, scaled by the
