@@ -55,6 +55,7 @@ static char openbuf[MAXOPEN][OPENLEN];
 static const char *openings[MAXOPEN];
 static int nopen = 0;
 static int g_ply = 0;
+static int g_nodes = 0;      /* if > 0, play at fixed nodes per move */
 
 static void load_builtin(void)
 {
@@ -186,7 +187,10 @@ static int eng_move(Engine *e, const char *poscmd, const char *moves, int depth,
 
     sprintf(buf, "position %s%s%s", poscmd, moves[0] ? " " : "", moves);
     eng_send(e, buf);
-    sprintf(buf, "go depth %d", depth);
+    if (g_nodes > 0)
+        sprintf(buf, "go nodes %d", g_nodes);
+    else
+        sprintf(buf, "go depth %d", depth);
     eng_send(e, buf);
     return eng_wait(e, "bestmove ", out, outsz);
 }
@@ -319,6 +323,8 @@ int main(int argc, char **argv)
         depthB = atoi(argv[4]);
     if (argc > 5)
         maxply = atoi(argv[5]);
+    if (argc > 7)
+        g_nodes = atoi(argv[7]);
 
     board_init();
     if (argc > 6) {
@@ -339,8 +345,9 @@ int main(int argc, char **argv)
         return 2;
     }
 
-    printf("A = %s  (depth %d)\nB = %s  (depth %d)\nopenings = %d  max_plies = %d\n\n",
-           a, depthA, b, depthB, nopen, maxply);
+    printf("A = %s  (depth %d)\nB = %s  (depth %d)\nopenings = %d  max_plies = %d%s%d\n\n",
+           a, depthA, b, depthB, nopen, maxply,
+           g_nodes > 0 ? "  nodes/move = " : "  depth mode", g_nodes);
 
     for (i = 0; i < nopen; i++) {
         for (s = 0; s < 2; s++) {
